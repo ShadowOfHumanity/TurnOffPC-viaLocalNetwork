@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import java.util.regex.*;
+import com.sun.jna.*;
+import com.sun.jna.win32.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +24,36 @@ public class ControllerClass {
         String isSuccess;
         if (DIGITS == 111){
             isSuccess = removeShutdown();
+        } else if (Pattern.compile("^222\\d*").matcher(""+DIGITS).matches()) {
+            String newDigits = String.valueOf(DIGITS).substring(3);
+            isSuccess = ExecuteChangeSound(Integer.parseInt(newDigits));
+
         } else {
             isSuccess = executeShutdown(String.valueOf(DIGITS));
         }
         return isSuccess ;
     }
+
+    private String ExecuteChangeSound(int soundPercent){
+
+
+
+
+        // Ensure the reduced volume is not below 0
+        if (soundPercent < 0) {
+            soundPercent = 0;
+        }
+
+        // Set the new volume level
+        VolumeControl.setVolume(soundPercent);
+
+        System.out.println("Volume changed to: " + soundPercent);
+
+
+
+        return "Success";
+    }
+
 
     private String executeShutdown(String timeInSeconds) {
         try {
